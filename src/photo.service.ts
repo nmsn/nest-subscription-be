@@ -3,6 +3,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Photo } from './photo.entity';
 
+import AV = require('leancloud-storage');
+
+AV.init({
+  appId: 'XuMwUdK2tccDSPBXd33edKWK-9Nh9j0Va',
+  appKey: 'qSUjWONe8Pp3kDjtbh3cFD49',
+  serverURLs: 'https://xumwudk2.lc-cn-e1-shared.com', // TODO 更换域名
+});
+
+// const Todo = AV.Object.extend('Todo');
+
 @Injectable()
 export class PhotoService {
   constructor(
@@ -14,19 +24,13 @@ export class PhotoService {
     return await this.photoRepository.find();
   }
 
-  async addPhoto(): Promise<Photo> {
-    const photo = new Photo();
-
-    photo.name = '123';
-    photo.description = '123';
-    photo.filename = '123';
-    photo.views = 123;
-    photo.isPublished  = true;
-
-    return await this.photoRepository.create(photo);
-
-    // const savedPhotos = await this.photoRepository.find();
-
-    // console.log('All photos from the db: ', savedPhotos);
+  async addPhoto() {
+    const TestObject = AV.Object.extend('TestObject');
+    const testObject = new TestObject();
+    testObject.set('words', 'Hello world!');
+    testObject.save().then(() => {
+      // tslint:disable-next-line: no-console
+      console.log('保存成功。');
+    });
   }
 }

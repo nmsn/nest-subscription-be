@@ -9,17 +9,4 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello();
   }
-
-  @Get('juejin/category/frontend')
-  @Header('Content-Type', 'application/json')
-  async getJueJinCategoryFrontend(): Promise<any> {
-     return await this.appService.getJueJinCategoryFrontend();
-  }
-
-  @Get('juejin/trending/frontend')
-  @Header('Content-Type', 'application/json')
-  async getJueJinTrendingFrontend(): Promise<any> {
-     return await this.appService.getJueJinTrendingFrontend();
-  }
-
 }

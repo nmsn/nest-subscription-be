@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Header } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query, Header } from '@nestjs/common';
 import { PhotoService } from './photo.service';
 import { Photo } from './photo.entity';
 
@@ -13,6 +13,16 @@ export class PhotoController {
 
   @Get()
   addPhoto() {
-    return this.photoService.addPhoto();
+    this.photoService.addPhoto();
+  }
+
+  @Post('search')
+  search(@Body() body)  {
+    return 'response';
+  }
+
+  @Get('search2/:id')
+  search2(@Param() body: object, @Query() body2: object)  {
+    return 'response';
   }
 }
