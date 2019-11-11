@@ -1,4 +1,4 @@
-import { Controller, Get, Header } from '@nestjs/common';
+import { Controller, Get, Header, Param } from '@nestjs/common';
 import { RsshubService } from './rsshub.service';
 
 @Controller('rsshub')
@@ -6,8 +6,13 @@ export class RsshubController {
   constructor(private readonly rsshubService: RsshubService) {}
 
   @Get()
-  get(): string {
-    return 'rsshub';
+  async getAll(): Promise<any> {
+    return await this.rsshubService.getAll();
+  }
+
+  @Get('seachByTitle/:title')
+  async searchByTitle(@Param('title') title: string): Promise<any> {
+    return await this.rsshubService.searchByTitle(title);
   }
 
   @Get('juejin/category/frontend')

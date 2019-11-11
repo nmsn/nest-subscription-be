@@ -1,9 +1,12 @@
 import { Injectable, Inject } from '@nestjs/common';
 import rsshub  = require('rsshub');
+import * as AV from 'leancloud-storage';
 
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Rsshub } from './rsshub.entity';
+AV.init({
+  appId: 'XuMwUdK2tccDSPBXd33edKWK-9Nh9j0Va',
+  appKey: 'qSUjWONe8Pp3kDjtbh3cFD49',
+  serverURLs: 'https://xumwudk2.lc-cn-e1-shared.com', // TODO 更换域名
+});
 
 rsshub.init({
   // config
@@ -11,32 +14,54 @@ rsshub.init({
 
 @Injectable()
 export class RsshubService {
-  constructor(
-    @InjectRepository(Rsshub)
-    private readonly rsshubRepository: Repository<Rsshub>,
-  ) {}
 
   getHello(): string {
     return 'Hello World!';
   }
 
+  async getAll(): Promise<any> {
+    const query = new AV.Query('Rsshub');
+    const result = query.find();
+
+    return result;
+  }
+
+  async clearAll() {
+    const query = new AV.Query('Rsshub');
+    await query.destroyAll();
+  }
+
+  async searchByTitle(title: string): Promise<any> {
+    const query = new AV.Query('Rsshub');
+    return await query.contains('title', title).find();
+  }
+
   async getJueJinCategoryFrontend(): Promise<any> {
     const result = await rsshub.request('/juejin/category/frontend');
 
-    const arr = result.item;
+    interface Item extends Object {
+      title: string;
+      link: string;
+      pubDate: string;
+    }
 
-    arr.forEach(item => {
-      const rsshubItem = new Rsshub();
+    const arr: Item[] = result.item;
 
-      rsshubItem.title = item.title;
-      rsshubItem.link = item.link;
-      rsshubItem.description = item.description;
-      rsshubItem.pubDate = item.pubDate;
+    arr.forEach((item: Item) => {
+      const RsshubItem = AV.Object.extend('Rsshub');
+      const rsshubItem = new RsshubItem();
 
-      this.rsshubRepository.create(rsshubItem);
+      rsshubItem.set({
+        title: item.title,
+        link: item.link,
+        pubData: item.pubDate,
+      });
+
+      rsshubItem.save().then(() => {
+        // tslint:disable-next-line: no-console
+        console.log('保存成功。');
+      });
     });
-
-    return { data: result };
   }
 
   async getJueJinTrendingFrontend(): Promise<any> {
