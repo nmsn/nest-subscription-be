@@ -15,16 +15,16 @@ export class RsshubController {
     return await this.rsshubService.searchByTitle(title);
   }
 
-  @Get('juejin/category/frontend')
+  @Get('juejin/category/:category')
   @Header('Content-Type', 'application/json')
-  async getJueJinCategoryFrontend(): Promise<any> {
-     return await this.rsshubService.getJueJinCategoryFrontend();
+  async getJueJinCategoryFrontend(@Param('category') category: string): Promise<any> {
+    return await this.rsshubService.getJueJinCategory(category);
   }
 
-  @Get('juejin/trending/frontend')
+  @Get('juejin/trending/:category/:type')
   @Header('Content-Type', 'application/json')
-  async getJueJinTrendingFrontend(): Promise<any> {
-     return await this.rsshubService.getJueJinTrendingFrontend();
+  async getJueJinTrendingFrontend(@Param('category') category: string, @Param('type') type: string): Promise<any> {
+    return await this.rsshubService.getJueJinTrending(category, type);
   }
 
 }

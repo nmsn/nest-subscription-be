@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import rsshub  = require('rsshub');
 import * as AV from 'leancloud-storage';
 
@@ -11,6 +11,13 @@ AV.init({
 rsshub.init({
   // config
 });
+
+interface Item extends Object {
+  title: string;
+  link: string;
+  pubDate: string;
+  type: string;
+}
 
 @Injectable()
 export class RsshubService {
@@ -36,14 +43,8 @@ export class RsshubService {
     return await query.contains('title', title).find();
   }
 
-  async getJueJinCategoryFrontend(): Promise<any> {
-    const result = await rsshub.request('/juejin/category/frontend');
-
-    interface Item extends Object {
-      title: string;
-      link: string;
-      pubDate: string;
-    }
+  async getJueJinCategory(category: string): Promise<any> {
+    const result = await rsshub.request(`/juejin/category/${category}`);
 
     const arr: Item[] = result.item;
 
@@ -55,6 +56,7 @@ export class RsshubService {
         title: item.title,
         link: item.link,
         pubData: item.pubDate,
+        type: category,
       });
 
       rsshubItem.save().then(() => {
@@ -64,8 +66,18 @@ export class RsshubService {
     });
   }
 
-  async getJueJinTrendingFrontend(): Promise<any> {
-    const result = await rsshub.request('/juejin/trending/ios/weekly');
+  /**
+   * @param {string} category  android | frontend | ios | backend | design | product | freebie | article | ai | devops | all
+   * @param {string} type weekly | monthly | historical
+   * @return {Object}
+   */
+  async getJueJinTrending(category: string, type: string): Promise<any> {
+    const result = await rsshub.request(`/juejin/trending/${category}/${type}`);
+    return { data: result };
+  }
+
+  async getJueJinPins(): Promise<any> {
+    const result = await rsshub.request(`/juejin/pins`);
     return { data: result };
   }
 }
