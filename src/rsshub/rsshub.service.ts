@@ -2,8 +2,6 @@ import { Injectable } from '@nestjs/common';
 import rsshub  = require('rsshub');
 import * as AV from 'leancloud-storage';
 
-import { sendMail } from '../../script/nodemailer.js';
-
 AV.init({
   appId: 'XuMwUdK2tccDSPBXd33edKWK-9Nh9j0Va',
   appKey: 'qSUjWONe8Pp3kDjtbh3cFD49',
@@ -31,8 +29,6 @@ export class RsshubService {
   async getAll(): Promise<any> {
     const query = new AV.Query('Rsshub');
     const result = query.find();
-
-    sendMail().catch(error => error);
     return result;
   }
 
