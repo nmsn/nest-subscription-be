@@ -21,11 +21,6 @@ interface Item extends Object {
 
 @Injectable()
 export class RsshubService {
-
-  getHello(): string {
-    return 'Hello World!';
-  }
-
   async getAll(): Promise<any> {
     const query = new AV.Query('Rsshub');
     const result = query.find();
