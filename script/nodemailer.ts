@@ -1,6 +1,6 @@
 import * as nodemailer from 'nodemailer';
 
-export const sendMail = async (option: object | undefined) => {
+export const sendMail = async (content?: object) => {
   const transporter = nodemailer.createTransport({
     service: '163',
     auth: {
@@ -9,15 +9,15 @@ export const sendMail = async (option: object | undefined) => {
     },
   });
 
-  const defaultOption = {
+  const defaults = {
       from: '"NMSN" <18268007796@163.com>', // sender address
       to: '136696700@qq.com', // list of receivers
-      subject: 'Hello ✔', // Subject line
-      text: 'Hello world?', // plain text body
-      html: '<b>Hello world?</b>', // html body
+      subject: '测试标题', // Subject line 标题
+      text: '测试文本', // plain text body
+      html: '<b>测试html</b>', // html body
     };
 
   // send mail with defined transport object
-  const info = await transporter.sendMail(option || defaultOption);
+  const info = await transporter.sendMail(content || defaults);
 
 };

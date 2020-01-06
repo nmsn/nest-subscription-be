@@ -32,7 +32,7 @@ export class RsshubService {
     const query = new AV.Query('Rsshub');
     const result = query.find();
 
-    sendMail(undefined).catch(error => error);
+    sendMail().catch(error => error);
     return result;
   }
 
