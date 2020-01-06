@@ -16,7 +16,7 @@ interface Item extends Object {
 
 @Injectable()
 export class LeanCloudService {
-
+  // Create
   async saveItem(container: string, item: Item): Promise<any> {
 
     const RsshubItem = AV.Object.extend(container);
@@ -38,5 +38,37 @@ export class LeanCloudService {
     arr.forEach((item: Item) => {
       this.saveItem(container, item);
     });
+  }
+
+  // Retrieve
+  async getAll(container: string): Promise<any> {
+    const query = new AV.Query(container);
+    const result = query.find();
+    return result;
+  }
+
+  // Update
+  async updateItem(container: string, key: string, value: string): Promise<any> {
+    const query = new AV.Query(container);
+    query.equalTo(key, value);
+
+    query.find().then((result) => {
+      result.forEach(item => item.set(key, value));
+    });
+  }
+
+  async getItem(container: string, key: string, value: string): Promise<any> {
+    const query = new AV.Query(container);
+    query.equalTo(key, value);
+    query.find().then((result) => {
+      return result;
+    });
+  }
+
+  // Delete
+  async deleteItem(container: string, key: string, value: string): Promise<any> {
+    const query = new AV.Query(container);
+    query.equalTo(key, value);
+    query.destroyAll();
   }
 }
