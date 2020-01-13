@@ -10,9 +10,9 @@ import { APP_FILTER } from '@nestjs/core';
 
 @Module({
   imports: [
-    RsshubModule,
+    MongooseModule.forRoot(process.env.MONGODB_ADDRESS, { useNewUrlParser: true, useFindAndModify: false }),
     UserModule,
-    MongooseModule.forRoot('mongodb://42.78.72.186/nmsn', { useNewUrlParser: true, useFindAndModify: false }),
+    RsshubModule,
   ],
   controllers: [AppController],
   providers: [

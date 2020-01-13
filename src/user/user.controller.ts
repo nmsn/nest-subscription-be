@@ -8,23 +8,6 @@ import { RolesGuard } from '../common/guard/roles.guard';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get('getAll')
-  async getAll(): Promise<any> {
-    return await this.userService.getAll();
-  }
-
-  @Get('getUser')
-  @Header('Content-Type', 'application/json')
-  async getUSer(@Param('email') email: string): Promise<any> {
-    return await this.userService.getUser(email);
-  }
-
-  @Post('deleteUser')
-  @Header('Content-Type', 'application/json')
-  async deleteUser(@Param('email') email: string): Promise<any> {
-    return await this.userService.deleteUser(email);
-  }
-
   /**
    * 更新用户信息
    * @param createCatDto 用户对象
