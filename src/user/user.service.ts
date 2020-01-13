@@ -8,7 +8,28 @@ import { Response } from '../Response.interface';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel('User') private readonly userModel: Model<User>) {}
+  private readonly users: User[];
+
+  constructor(@InjectModel('User') private readonly userModel: Model<User>) {
+    this.users = [
+      {
+        username: 'john',
+        password: 'changeme',
+      },
+      {
+        username: 'chris',
+        password: 'secret',
+      },
+      {
+        username: 'maria',
+        password: 'guess',
+      },
+    ];
+  }
+
+  async findOne(username: string): Promise<User | undefined> {
+    return this.users.find(user => user.username === username);
+  }
 
   /**
    * 创建新用户

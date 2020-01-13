@@ -6,11 +6,11 @@
 export interface User {
   username: string;
   password: string;
-  type: string;
-  header: string;
-  post: string;
-  info: string;
-  company: string;
-  salary: string;
-  del: number;
+  type?: string;
+  header?: string;
+  post?: string;
+  info?: string;
+  company?: string;
+  salary?: string;
+  del?: number;
 }
