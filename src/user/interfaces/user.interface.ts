@@ -1,3 +1,5 @@
+import { Model, Document } from 'mongoose';
+
 /*
  * filename: User
  * overview: 用户信息接口

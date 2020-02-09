@@ -1,10 +1,9 @@
 import { Controller, Get, Post, Header, Param, Body, HttpCode, UseGuards, Query } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dtos/create-user.dto';
-import { RolesGuard } from '../common/guard/roles.guard';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('user')
-@UseGuards(RolesGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -22,6 +21,7 @@ export class UserController {
    * 根据相应的条件查询用户列表
    * @param createCatDto 用户对象
    */
+  @UseGuards(AuthGuard('jwt'))
   @Get('list')
   @HttpCode(200)
   async find(@Query() createCatDto: CreateUserDto) {

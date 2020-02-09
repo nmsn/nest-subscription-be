@@ -1,34 +1,17 @@
 import { Injectable } from '@nestjs/common';
-
-import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './interfaces/user.interface';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { Response } from '../Response.interface';
+import { Model, Document } from 'mongoose';
+
+interface UserModel extends User, Document {}
 
 @Injectable()
 export class UserService {
   private readonly users: User[];
 
-  constructor(@InjectModel('User') private readonly userModel: Model<User>) {
-    this.users = [
-      {
-        username: 'john',
-        password: 'changeme',
-      },
-      {
-        username: 'chris',
-        password: 'secret',
-      },
-      {
-        username: 'maria',
-        password: 'guess',
-      },
-    ];
-  }
-
-  async findOne(username: string): Promise<User | undefined> {
-    return this.users.find(user => user.username === username);
+  constructor(@InjectModel('User') private readonly userModel: Model<UserModel>) {
   }
 
   /**
@@ -41,7 +24,7 @@ export class UserService {
     if (existsUser) {
         return { code: 1, data: {}, message: '用户名已存在' };
     }
-    return { code: 0, data: await createdCat.save(), message: '' };
+    return { code: 0, data: createdCat, message: '' };
   }
 
   /**
@@ -85,25 +68,27 @@ export class UserService {
    * 查询用户列表
    * @param createUserDto
    */
-  async find(createUserDto: CreateUserDto): Promise<Response<User[]>> {
+  async find(createUserDto: CreateUserDto): Promise<User[]> {
       const { page, pageSize, ...rest } = createUserDto;
-      const totalCount = await this.userModel.find({ ...rest, __v: 0 }).countDocuments();
-      const userList = await this.userModel.find({ ...rest, __v: 0 }, { password: 0, __v: 0 })
+      const totalCount = await this.userModel.find({ ...rest }).countDocuments();
+      const userList = await this.userModel.find({ ...rest })
           .limit(+pageSize).skip((page - 1) * pageSize).exec();
       if (userList && userList.length > 0) {
-          return { code: 0, data: userList, message: '用户列表查询成功', page, pageSize, totalCount };
+          // return { code: 0, data: userList, message: '用户列表查询成功', page, pageSize, totalCount };
+          return userList;
       }
-      return { code: 0, data: userList, message: '用户列表无数据', page: +page === 0 ? page : Math.ceil(totalCount / page), pageSize, totalCount };
+      // return { code: 0, data: userList, message: '用户列表无数据', page: +page === 0 ? page : Math.ceil(totalCount / page), pageSize, totalCount };
+      return null;
   }
 
-  /**
-   * 供别的模块调用查询用户列表的方法
-   * @param params 查询条件
-   * @param filter 过滤条件
-   */
-  async modelFind(params: any, filter: any = { password: 0, _v: 0 }): Promise<Response<User[]>> {
-      return this.userModel.find(params, filter);
-  }
+  // /**
+  //  * 供别的模块调用查询用户列表的方法
+  //  * @param params 查询条件
+  //  * @param filter 过滤条件
+  //  */
+  // async modelFind(params: any, filter: any = { password: 0, _v: 0 }): Promise<Response<User[]>> {
+  //     return this.userModel.find(params, filter);
+  // }
 
   /**
    * 根据 id 查询对应用户信息
