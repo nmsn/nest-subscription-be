@@ -102,4 +102,15 @@ export class UserService {
       return await this.userModel.find().exec();
   }
 
+  async validateUser(username: string, pass: string): Promise<any> {
+    // TODO 查找是否存在该用户
+    const userArr = await this.find({ username, password: pass });
+    const user = userArr && userArr[0];
+
+    if (user && user.password === pass) {
+      return user;
+    }
+    return null;
+  }
+
 }
