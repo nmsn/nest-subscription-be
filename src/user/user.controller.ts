@@ -76,7 +76,8 @@ export class UserController {
   @HttpCode(200)
   async getUser(@Request() req) {
     const token = req.header('Authorization');
-    return await this.userService.getUser(token);
+    const userInfo = await this.userService.getUser(token);
+    return { code: 0, data: userInfo, message: '获取用户数据成功' };
   }
 
 }

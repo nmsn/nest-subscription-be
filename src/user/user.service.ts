@@ -8,7 +8,7 @@ import { AuthService } from '../auth/auth.service';
 
 interface UserModel extends User, Document {}
 
-interface ResponseUser {
+export interface ResponseUser {
   user: CreateUserDto;
   token: string;
 }
@@ -64,17 +64,23 @@ export class UserService {
    * 获取当前用户信息
    * @param headers 用户 token 值，这里用 id 进行模拟
    */
-  async getUser(token): Promise<User> {
+  async getUser(token: string): Promise<ResponseUser> {
 
     const regex = /(?<=bearer\s)(\S+)/;
-    const realToken = token.match(regex);
 
-    const tokenInfo = await this.authService.verifyToken(realToken[0]);
+    const realToken = token.match(regex)[0];
+
+    const tokenInfo = await this.authService.verifyToken(realToken);
 
     const { username, password } = tokenInfo;
     const existsUser = await this.userModel.findOne({ username });
+
     if (existsUser && existsUser.password === password) {
-      return existsUser;
+      if (this.authService.isTokenExpired(realToken)) {
+        const newToken = await this.authService.updateToken(realToken);
+        return { user: existsUser, token: newToken };
+      }
+      return { user: existsUser, token: realToken };
     }
 
     return null;
