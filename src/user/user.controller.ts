@@ -39,7 +39,8 @@ export class UserController {
   async login(@Body() createUserDto: CreateUserDto, @Response() res) {
       const user = await this.userService.login(createUserDto);
       if (user) {
-        return res.header('Authorization', user.token).send({ code: 0, data: user, message: '登录成功' });
+        res.set('authorization', user.token);
+        return res.send({ code: 0, data: user, message: '登录成功' });
       }
 
       return { code: -1, data: {}, message: '用户名或密码错误' };
@@ -75,7 +76,7 @@ export class UserController {
   @Get('current')
   @HttpCode(200)
   async getUser(@Request() req) {
-    const token = req.header('Authorization');
+    const token = req.header('authorization');
     const userInfo = await this.userService.getUser(token);
     return { code: 0, data: userInfo, message: '获取用户数据成功' };
   }

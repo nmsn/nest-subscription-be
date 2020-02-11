@@ -65,22 +65,17 @@ export class UserService {
    * @param headers 用户 token 值，这里用 id 进行模拟
    */
   async getUser(token: string): Promise<ResponseUser> {
-
-    const regex = /(?<=bearer\s)(\S+)/;
-
-    const realToken = token.match(regex)[0];
-
-    const tokenInfo = await this.authService.verifyToken(realToken);
+    const tokenInfo = await this.authService.verifyToken(token);
 
     const { username, password } = tokenInfo;
     const existsUser = await this.userModel.findOne({ username });
 
     if (existsUser && existsUser.password === password) {
-      if (this.authService.isTokenExpired(realToken)) {
-        const newToken = await this.authService.updateToken(realToken);
+      if (this.authService.isTokenExpired(token)) {
+        const newToken = await this.authService.updateToken(token);
         return { user: existsUser, token: newToken };
       }
-      return { user: existsUser, token: realToken };
+      return { user: existsUser, token };
     }
 
     return null;
