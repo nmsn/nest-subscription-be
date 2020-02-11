@@ -4,14 +4,20 @@ import { User } from './interfaces/user.interface';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { Response } from '../Response.interface';
 import { Model, Document } from 'mongoose';
+import { AuthService } from '../auth/auth.service';
 
 interface UserModel extends User, Document {}
+
+interface ResponseUser {
+  user: CreateUserDto;
+  token: string;
+}
 
 @Injectable()
 export class UserService {
   private readonly users: User[];
 
-  constructor(@InjectModel('User') private readonly userModel: Model<UserModel>) {
+  constructor(@InjectModel('User') private readonly userModel: Model<UserModel>, private readonly authService: AuthService) {
   }
 
   /**
@@ -31,12 +37,15 @@ export class UserService {
    * 登录
    * @param createUserDto
    */
-  async login(createUserDto: CreateUserDto): Promise<Response<User | object>> {
+  async login(createUserDto: CreateUserDto): Promise<ResponseUser> {
       const existsUser = await this.userModel.findOne({ username: createUserDto.username });
+
+      // 根据用户名和密码创建token
       if (existsUser && existsUser.password === createUserDto.password) {
-          return { code: 0, data: existsUser, message: '登录成功' };
+        const token = await this.authService.createToken({ username: existsUser.username, password: existsUser.password });
+        return { user: existsUser, token };
       }
-      return { code: 1, data: {}, message: '用户名或密码错误' };
+      return null;
   }
 
   /**
@@ -55,13 +64,20 @@ export class UserService {
    * 获取当前用户信息
    * @param headers 用户 token 值，这里用 id 进行模拟
    */
-  async getUser(headers): Promise<Response<User | object>> {
-      const userId = headers['x-auth-token'];
-      const user = userId ? await this.userModel.findById(userId) : '';
-      if (user) {
-          return { code: 0, data: user, message: '用户信息更新成功' };
-      }
-      return { code: 1, data: {}, message: '用户不存在' };
+  async getUser(token): Promise<User> {
+
+    const regex = /(?<=bearer\s)(\S+)/;
+    const realToken = token.match(regex);
+
+    const tokenInfo = await this.authService.verifyToken(realToken[0]);
+
+    const { username, password } = tokenInfo;
+    const existsUser = await this.userModel.findOne({ username });
+    if (existsUser && existsUser.password === password) {
+      return existsUser;
+    }
+
+    return null;
   }
 
   /**

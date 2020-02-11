@@ -15,6 +15,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload: any) {
     // TODO 以登录用户token验证
+    console.log(payload);
     return { username: payload.username };
   }
 }
