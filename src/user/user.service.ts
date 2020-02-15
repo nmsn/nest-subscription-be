@@ -17,8 +17,10 @@ export interface ResponseUser {
 export class UserService {
   private readonly users: User[];
 
-  constructor(@InjectModel('User') private readonly userModel: Model<UserModel>, private readonly authService: AuthService) {
-  }
+  constructor(
+    @InjectModel('User') private readonly userModel: Model<UserModel>,
+    private readonly authService: AuthService,
+  ) {}
 
   /**
    * 创建新用户
@@ -26,9 +28,12 @@ export class UserService {
    */
   async create(createUserDto: CreateUserDto): Promise<Response<User | object>> {
     const createdCat = new this.userModel(createUserDto);
-    const existsUser = await this.userModel.findOne({ username: createUserDto.username }, { password: 0 });
+    const existsUser = await this.userModel.findOne(
+      { username: createUserDto.username },
+      { password: 0 },
+    );
     if (existsUser) {
-        return { code: 1, data: {}, message: '用户名已存在' };
+      return { code: 1, data: {}, message: '用户名已存在' };
     }
     return { code: 0, data: createdCat, message: '' };
   }
@@ -38,14 +43,19 @@ export class UserService {
    * @param createUserDto
    */
   async login(createUserDto: CreateUserDto): Promise<ResponseUser> {
-      const existsUser = await this.userModel.findOne({ username: createUserDto.username });
+    const existsUser = await this.userModel.findOne({
+      username: createUserDto.username,
+    });
 
-      // 根据用户名和密码创建token
-      if (existsUser && existsUser.password === createUserDto.password) {
-        const token = await this.authService.createToken({ username: existsUser.username, password: existsUser.password });
-        return { user: existsUser, token };
-      }
-      return null;
+    // 根据用户名和密码创建token
+    if (existsUser && existsUser.password === createUserDto.password) {
+      const token = await this.authService.createToken({
+        username: existsUser.username,
+        password: existsUser.password,
+      });
+      return { user: existsUser, token };
+    }
+    return null;
   }
 
   /**
@@ -53,11 +63,15 @@ export class UserService {
    * @param createUserDto
    */
   async update(createUserDto: CreateUserDto): Promise<Response<User | object>> {
-      const user = await this.userModel.findOneAndUpdate({ username: createUserDto.username }, createUserDto, { new: true });
-      if (user) {
-          return { code: 0, data: user, message: '用户信息更新成功' };
-      }
-      return { code: 1, data: {}, message: '用户信息更新失败' };
+    const user = await this.userModel.findOneAndUpdate(
+      { username: createUserDto.username },
+      createUserDto,
+      { new: true },
+    );
+    if (user) {
+      return { code: 0, data: user, message: '用户信息更新成功' };
+    }
+    return { code: 1, data: {}, message: '用户信息更新失败' };
   }
 
   /**
@@ -86,16 +100,19 @@ export class UserService {
    * @param createUserDto
    */
   async find(createUserDto: CreateUserDto): Promise<User[]> {
-      const { page, pageSize, ...rest } = createUserDto;
-      const totalCount = await this.userModel.find({ ...rest }).countDocuments();
-      const userList = await this.userModel.find({ ...rest })
-          .limit(+pageSize).skip((page - 1) * pageSize).exec();
-      if (userList && userList.length > 0) {
-          // return { code: 0, data: userList, message: '用户列表查询成功', page, pageSize, totalCount };
-          return userList;
-      }
-      // return { code: 0, data: userList, message: '用户列表无数据', page: +page === 0 ? page : Math.ceil(totalCount / page), pageSize, totalCount };
-      return null;
+    const { page, pageSize, ...rest } = createUserDto;
+    const totalCount = await this.userModel.find({ ...rest }).countDocuments();
+    const userList = await this.userModel
+      .find({ ...rest })
+      .limit(+pageSize)
+      .skip((page - 1) * pageSize)
+      .exec();
+    if (userList && userList.length > 0) {
+      // return { code: 0, data: userList, message: '用户列表查询成功', page, pageSize, totalCount };
+      return userList;
+    }
+    // return { code: 0, data: userList, message: '用户列表无数据', page: +page === 0 ? page : Math.ceil(totalCount / page), pageSize, totalCount };
+    return null;
   }
 
   // /**
@@ -112,11 +129,11 @@ export class UserService {
    * @param id 用户 id
    */
   async findById(id: string): Promise<User> {
-      return await this.userModel.findById(id, { password: 0 }).exec();
+    return await this.userModel.findById(id, { password: 0 }).exec();
   }
 
   async findAll(): Promise<User[]> {
-      return await this.userModel.find().exec();
+    return await this.userModel.find().exec();
   }
 
   async validateUser(username: string, pass: string): Promise<any> {
@@ -129,5 +146,4 @@ export class UserService {
     }
     return null;
   }
-
 }
