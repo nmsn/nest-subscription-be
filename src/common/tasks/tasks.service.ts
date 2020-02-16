@@ -7,10 +7,10 @@ export class TasksService {
   constructor(private readonly schedulerRegistry: SchedulerRegistry) {}
   private readonly logger = new Logger(TasksService.name);
 
-  @Cron('45 * * * * *')
-  handleCron() {
-    this.logger.debug('Called when the second is 45');
-  }
+  // @Cron('45 * * * * *')
+  // handleCron() {
+  //   this.logger.debug('Called when the second is 45');
+  // }
 
   // @Cron(CronExpression.EVERY_MINUTE)
   // handleCron2() {
