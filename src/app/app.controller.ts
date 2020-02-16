@@ -6,7 +6,10 @@ import { CreateUserDto } from '../user/dtos/create-user.dto';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService, private readonly userService: UserService) {}
+  constructor(
+    private readonly appService: AppService,
+    private readonly userService: UserService,
+  ) {}
 
   @Get()
   getHello(): string {

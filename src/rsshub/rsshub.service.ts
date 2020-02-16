@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import rsshub  = require('rsshub');
+import rsshub = require('rsshub');
 import * as AV from 'leancloud-storage';
 
 AV.init({

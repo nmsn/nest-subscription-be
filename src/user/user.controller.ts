@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, HttpCode, UseGuards, Query, Request, Response, Header } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  HttpCode,
+  UseGuards,
+  Query,
+  Request,
+  Response,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -6,7 +16,10 @@ import { AuthService } from '../auth/auth.service';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService, private readonly authService: AuthService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly authService: AuthService,
+  ) {}
 
   /**
    * 更新用户信息
@@ -15,7 +28,7 @@ export class UserController {
   @Post('update')
   @HttpCode(200)
   async update(@Body() createCatDto: CreateUserDto) {
-      return await this.userService.update(createCatDto);
+    return await this.userService.update(createCatDto);
   }
 
   /**
@@ -26,7 +39,7 @@ export class UserController {
   @Get('list')
   @HttpCode(200)
   async find(@Query() createCatDto: CreateUserDto) {
-      return await this.userService.find(createCatDto);
+    return await this.userService.find(createCatDto);
   }
 
   /**
@@ -37,13 +50,13 @@ export class UserController {
   @Post('login')
   @HttpCode(200)
   async login(@Body() createUserDto: CreateUserDto, @Response() res) {
-      const user = await this.userService.login(createUserDto);
-      if (user) {
-        res.set('authorization', user.token);
-        return res.send({ code: 0, data: user, message: '登录成功' });
-      }
+    const user = await this.userService.login(createUserDto);
+    if (user) {
+      res.set('authorization', user.token);
+      return res.send({ code: 0, data: user, message: '登录成功' });
+    }
 
-      return { code: -1, data: {}, message: '用户名或密码错误' };
+    return { code: -1, data: {}, message: '用户名或密码错误' };
   }
 
   // @Post('login')
@@ -65,7 +78,7 @@ export class UserController {
   @Post('register')
   @HttpCode(200)
   async register(@Body() createUserDto: CreateUserDto) {
-      return await this.userService.create(createUserDto);
+    return await this.userService.create(createUserDto);
   }
 
   /**
@@ -80,5 +93,4 @@ export class UserController {
     const userInfo = await this.userService.getUser(token);
     return { code: 0, data: userInfo, message: '获取用户数据成功' };
   }
-
 }

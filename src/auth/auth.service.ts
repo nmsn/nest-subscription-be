@@ -23,7 +23,10 @@ export class AuthService {
 
   async isTokenExpired(token: string) {
     const { exp } = await this.verifyToken(token);
-    const now = new Date().getTime().toString().slice(0, 10);
+    const now = new Date()
+      .getTime()
+      .toString()
+      .slice(0, 10);
     if (exp < now) {
       return true;
     }

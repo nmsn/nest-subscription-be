@@ -17,14 +17,18 @@ export class RsshubController {
 
   @Get('juejin/category/:category')
   @Header('Content-Type', 'application/json')
-  async getJueJinCategoryFrontend(@Param('category') category: string): Promise<any> {
+  async getJueJinCategoryFrontend(
+    @Param('category') category: string,
+  ): Promise<any> {
     return await this.rsshubService.getJueJinCategory(category);
   }
 
   @Get('juejin/trending/:category/:type')
   @Header('Content-Type', 'application/json')
-  async getJueJinTrendingFrontend(@Param('category') category: string, @Param('type') type: string): Promise<any> {
+  async getJueJinTrendingFrontend(
+    @Param('category') category: string,
+    @Param('type') type: string,
+  ): Promise<any> {
     return await this.rsshubService.getJueJinTrending(category, type);
   }
-
 }
