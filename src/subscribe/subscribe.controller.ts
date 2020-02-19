@@ -10,12 +10,13 @@ export class SubscribeController {
   ) {}
 
   @Get()
-  get(@Req() req): object {
-    return this.subscribeService.get(req.user.userId);
+  async get(@Req() req): Promise<object> {
+    const data = await this.subscribeService.get(req.user.userId);
+    return { data, message: '获取订阅数据成功' };
   }
 
   @Post('update')
-  update(@Req() req, @Body() body): object {
-    return this.subscribeService.update(req.user.userId, body);
+  async update(@Req() req, @Body() body): Promise<object> {
+    return await this.subscribeService.update(req.user.userId, body);
   }
 }
