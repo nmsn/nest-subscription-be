@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { RsshubModule } from '../rsshub/rsshub.module';
 import { AuthModule } from '../auth/auth.module';
 import { UserModule } from '../user/user.module';
+import { SubscribeModule } from '../subscribe/subscribe.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TasksModule } from '../common/tasks/tasks.module';
@@ -19,6 +20,7 @@ import { TasksModule } from '../common/tasks/tasks.module';
     UserModule,
     RsshubModule,
     AuthModule,
+    SubscribeModule,
   ],
   controllers: [AppController],
   providers: [AppService],
