@@ -15,8 +15,6 @@ export interface ResponseUser {
 
 @Injectable()
 export class UserService {
-  private readonly users: User[];
-
   constructor(
     @InjectModel('User') private readonly userModel: Model<UserModel>,
     private readonly authService: AuthService,
@@ -51,7 +49,7 @@ export class UserService {
     if (existsUser && existsUser.password === createUserDto.password) {
       const token = await this.authService.createToken({
         username: existsUser.username,
-        password: existsUser.password,
+        userId: existsUser._id,
       });
       return { user: existsUser, token };
     }
@@ -81,14 +79,10 @@ export class UserService {
   async getUser(token: string): Promise<ResponseUser> {
     const tokenInfo = await this.authService.verifyToken(token);
 
-    const { username, password } = tokenInfo;
-    const existsUser = await this.userModel.findOne({ username });
+    const { userId } = tokenInfo;
+    const existsUser = await this.userModel.findById(userId);
 
-    if (existsUser && existsUser.password === password) {
-      if (this.authService.isTokenExpired(token)) {
-        const newToken = await this.authService.updateToken(token);
-        return { user: existsUser, token: newToken };
-      }
+    if (existsUser) {
       return { user: existsUser, token };
     }
 
@@ -129,7 +123,7 @@ export class UserService {
    * @param id 用户 id
    */
   async findById(id: string): Promise<User> {
-    return await this.userModel.findById(id, { password: 0 }).exec();
+    return await this.userModel.findById(id).exec();
   }
 
   async findAll(): Promise<User[]> {

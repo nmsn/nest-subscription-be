@@ -5,8 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 export class AuthService {
   constructor(private readonly jwtService: JwtService) {}
 
-  async createToken(user: any) {
-    const payload = { username: user.username, password: user.password };
+  async createToken(payload: object) {
     return this.jwtService.sign(payload);
   }
 
@@ -15,21 +14,21 @@ export class AuthService {
     return tokenItem;
   }
 
-  async updateToken(token: string) {
-    const { username, password } = await this.verifyToken(token);
-    const newToken = this.createToken({ username, password });
-    return newToken;
-  }
+  // async updateToken(token: string) {
+  //   const { username, password } = await this.verifyToken(token);
+  //   const newToken = this.createToken({ username, password });
+  //   return newToken;
+  // }
 
-  async isTokenExpired(token: string) {
-    const { exp } = await this.verifyToken(token);
-    const now = new Date()
-      .getTime()
-      .toString()
-      .slice(0, 10);
-    if (exp < now) {
-      return true;
-    }
-    return false;
-  }
+  // async isTokenExpired(token: string) {
+  //   const { exp } = await this.verifyToken(token);
+  //   const now = new Date()
+  //     .getTime()
+  //     .toString()
+  //     .slice(0, 10);
+  //   if (exp < now) {
+  //     return true;
+  //   }
+  //   return false;
+  // }
 }
