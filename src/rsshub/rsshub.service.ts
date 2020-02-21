@@ -1,77 +1,67 @@
 import { Injectable } from '@nestjs/common';
-import rsshub = require('rsshub');
-import * as AV from 'leancloud-storage';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model, Document } from 'mongoose';
+import { RsshubItem, RsshubResponseItem, RsshubSubItem, RsshubFormatItem } from './interface/rsshubItem.interface';
 
-AV.init({
-  appId: 'XuMwUdK2tccDSPBXd33edKWK-9Nh9j0Va',
-  appKey: 'qSUjWONe8Pp3kDjtbh3cFD49',
-  serverURLs: 'https://xumwudk2.lc-cn-e1-shared.com', // TODO 更换域名
-});
+interface RsshubModel extends RsshubItem, Document {}
+
+import rsshub = require('rsshub');
 
 rsshub.init({
   // config
 });
 
-interface Item extends Object {
-  title: string;
-  link: string;
-  pubDate: string;
-  type: string;
-}
-
 @Injectable()
 export class RsshubService {
+  constructor(
+    @InjectModel('Rsshub')
+    private readonly rsshubModel: Model<RsshubModel>,
+  ) {}
+
   async getAll(): Promise<any> {
-    const query = new AV.Query('Rsshub');
-    const result = query.find();
+    const result: RsshubItem[] = await this.rsshubModel.find();
     return result;
   }
 
   async clearAll() {
-    const query = new AV.Query('Rsshub');
-    await query.destroyAll();
-  }
-
-  async searchByTitle(title: string): Promise<any> {
-    const query = new AV.Query('Rsshub');
-    return await query.contains('title', title).find();
+    await this.rsshubModel.deleteMany({});
   }
 
   async getJueJinCategory(category: string): Promise<any> {
     const result = await rsshub.request(`/juejin/category/${category}`);
-
-    const arr: Item[] = result.item;
-
-    arr.forEach((item: Item) => {
-      const RsshubItem = AV.Object.extend('Rsshub');
-      const rsshubItem = new RsshubItem();
-
-      rsshubItem.set({
-        title: item.title,
-        link: item.link,
-        pubData: item.pubDate,
-        type: category,
-      });
-
-      rsshubItem.save().then(() => {
-        // tslint:disable-next-line: no-console
-        console.log('保存成功。');
-      });
-    });
+    return this.formatRsshubResponse(result);
   }
 
-  /**
-   * @param {string} category  android | frontend | ios | backend | design | product | freebie | article | ai | devops | all
-   * @param {string} type weekly | monthly | historical
-   * @return {Object}
-   */
+  async saveJueJinCategory(category: string): Promise<any> {
+    const result = await rsshub.request(`/juejin/category/${category}`);
+    const data = this.formatRsshubResponse(result)
+    this.rsshubModel.insertMany(data);
+  }
+
   async getJueJinTrending(category: string, type: string): Promise<any> {
     const result = await rsshub.request(`/juejin/trending/${category}/${type}`);
-    return { data: result };
+    return result;
   }
 
   async getJueJinPins(): Promise<any> {
     const result = await rsshub.request(`/juejin/pins`);
-    return { data: result };
+    return result;
+  }
+
+  formatRsshubResponse(data: RsshubResponseItem): RsshubFormatItem[] {
+    const now = new Date();
+    const {
+      updated,  // 更新时间
+      atomlink, // 请求接口
+      item, // 数据项数组
+    } = data;
+    const arr: RsshubFormatItem[] = item.map((obj: RsshubSubItem) => ({
+      updated: new Date(updated),
+      atomlink,
+      saved: now,
+      pubDate: obj.pubDate,
+      ...obj,
+    }));
+    return arr;
   }
 }
