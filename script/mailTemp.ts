@@ -16,7 +16,7 @@ const mail = `
         <hr style="background-color: #e0e0e0;;border: 0;width: 100%;height: 1px;"/>
         <div>
           <a href="<%= items[i].link %>" style="display: block;font-weight: bold;font-size: 14px;line-height: 2;text-decoration: none;margin: 6px 0;color:#2f3030;"><%= items[i].title %></a>
-          <div style="font-size: 13px;color: #5f6060;line-height: 1.5;padding-bottom: 8px;"><%= items[1].content %></div>
+          <div style="font-size: 13px;color: #5f6060;line-height: 1.5;padding-bottom: 8px;"><%= items[i].content %></div>
         </div>
         <% } %>
       <hr style="background-color: #e0e0e0;;border: 0;width: 100%;height: 1px;"/>
