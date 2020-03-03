@@ -10,4 +10,5 @@ export const RsshubItemSchema = new mongoose.Schema({
   updated: Date,
   pubDate: Date,
   saved: Date,
+  urlParams: Array,
 });

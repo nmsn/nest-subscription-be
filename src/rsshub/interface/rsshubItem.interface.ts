@@ -35,4 +35,5 @@ export interface RsshubFormatItem {
   link: string;
   guid: string;
   saved: Date,
+  urlParams: string[],
 }

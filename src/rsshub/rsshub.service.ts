@@ -28,38 +28,46 @@ export class RsshubService {
   }
 
   async getJueJinCategory(category: string): Promise<any> {
-    const result = await rsshub.request(`/juejin/category/${category}`);
-    return this.formatRsshubResponse(result);
+    const url = `/juejin/category/${category}`;
+    const result = await rsshub.request(url);
+    return this.formatRsshubResponse(result, url);
   }
 
   async saveJueJinCategory(category: string): Promise<any> {
-    const result = await rsshub.request(`/juejin/category/${category}`);
-    const data = this.formatRsshubResponse(result)
+    const url = `/juejin/category/${category}`;
+    const result = await rsshub.request(url);
+    const data = this.formatRsshubResponse(result, url)
     this.rsshubModel.insertMany(data);
   }
 
   async getJueJinTrending(category: string, type: string): Promise<any> {
-    const result = await rsshub.request(`/juejin/trending/${category}/${type}`);
-    return result;
+    const url = `/juejin/trending/${category}/${type}`;
+    const result = await rsshub.request(url);
+    return this.formatRsshubResponse(result, url);
   }
 
   async getJueJinPins(): Promise<any> {
-    const result = await rsshub.request(`/juejin/pins`);
-    return result;
+    const url = `/juejin/pins`;
+    const result = await rsshub.request(url);
+    return this.formatRsshubResponse(result, url);
   }
 
-  formatRsshubResponse(data: RsshubResponseItem): RsshubFormatItem[] {
+  formatRsshubResponse(data: RsshubResponseItem, url?: string): RsshubFormatItem[] {
     const now = new Date();
     const {
       updated,  // 更新时间
       atomlink, // 请求接口
       item, // 数据项数组
     } = data;
+
+    const urlParams = url.split('/').slice(1);
+
     const arr: RsshubFormatItem[] = item.map((obj: RsshubSubItem) => ({
       updated: new Date(updated),
       atomlink,
       saved: now,
       pubDate: obj.pubDate,
+      urlParams,
       ...obj,
     }));
     return arr;
