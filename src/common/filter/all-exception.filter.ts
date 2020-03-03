@@ -7,12 +7,14 @@ export class AllExceptionFilter implements ExceptionFilter<any> {
     const http = host.switchToHttp();
     const request = http.getRequest<Request>();
     const response = http.getResponse<Response>();
+    const status = exception.getStatus();
+    const message = exception.message.message;
 
-    response.status(exception.getStatus()).json({
-      code: exception.getStatus(),
+    response.status(status).json({
+      statusCode: status,
       timestamp: new Date().toISOString(),
       path: request.url,
-      message: exception.message.message,
+      message,
     });
   }
 }

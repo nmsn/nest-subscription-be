@@ -8,6 +8,7 @@ import {
   Query,
   Request,
   Response,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dtos/create-user.dto';
@@ -53,23 +54,11 @@ export class UserController {
     const user = await this.userService.login(createUserDto);
     if (user) {
       res.set('authorization', user.token);
-      return res.send({ code: 0, data: user, message: '登录成功' });
+      return res.send({ data: user, message: '登录成功' });
     }
 
-    return { code: -1, data: {}, message: '用户名或密码错误' };
+    throw new UnauthorizedException('用户名或密码错误');
   }
-
-  // @Post('login')
-  // @HttpCode(200)
-  // async login(@Request() req, @Response() res) {
-  //   const token = await this.authService.createToken(req.user);
-
-  //   if (token) {
-  //     return res.header('token', token.token).send({ code: 0, message: '登录成功' });
-  //   }
-
-  //   return { code: -1, data: {}, message: '用户名或密码错误' };
-  // }
 
   /**
    * 用户注册
@@ -91,6 +80,6 @@ export class UserController {
   async getUser(@Request() req) {
     const token = req.header('authorization');
     const userInfo = await this.userService.getUser(token);
-    return { code: 0, data: userInfo, message: '获取用户数据成功' };
+    return { data: userInfo, message: '获取用户数据成功' };
   }
 }

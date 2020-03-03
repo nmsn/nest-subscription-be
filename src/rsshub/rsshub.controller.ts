@@ -1,4 +1,4 @@
-import { Controller, Get, Header, Param } from '@nestjs/common';
+import { Controller, Get, Post, Param } from '@nestjs/common';
 import { RsshubService } from './rsshub.service';
 
 @Controller('rsshub')
@@ -10,25 +10,33 @@ export class RsshubController {
     return await this.rsshubService.getAll();
   }
 
-  @Get('seachByTitle/:title')
-  async searchByTitle(@Param('title') title: string): Promise<any> {
-    return await this.rsshubService.searchByTitle(title);
+  @Get('sendMail')
+  async mail(): Promise<any> {
+    return await this.rsshubService.sendMail();
+  }
+
+  @Get('clearall')
+  async clearAll() {
+    await this.rsshubService.clearAll();
   }
 
   @Get('juejin/category/:category')
-  @Header('Content-Type', 'application/json')
-  async getJueJinCategoryFrontend(
+  async getJueJinCategory(
     @Param('category') category: string,
   ): Promise<any> {
     return await this.rsshubService.getJueJinCategory(category);
   }
 
   @Get('juejin/trending/:category/:type')
-  @Header('Content-Type', 'application/json')
-  async getJueJinTrendingFrontend(
+  async getJueJinTrending(
     @Param('category') category: string,
     @Param('type') type: string,
   ): Promise<any> {
     return await this.rsshubService.getJueJinTrending(category, type);
+  }
+
+  @Get('juejin/trending/pins')
+  async getJueJinPins(): Promise<any> {
+    return await this.rsshubService.getJueJinPins();
   }
 }
