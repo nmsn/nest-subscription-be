@@ -12,5 +12,6 @@ import { RsshubItemSchema } from './schemas/rsshubItem.schema';
   imports: [
     MongooseModule.forFeature([{ name: 'Rsshub', schema: RsshubItemSchema }]),
   ],
+  exports: [RsshubService],
 })
 export class RsshubModule {}

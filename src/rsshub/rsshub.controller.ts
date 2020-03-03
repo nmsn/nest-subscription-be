@@ -10,6 +10,11 @@ export class RsshubController {
     return await this.rsshubService.getAll();
   }
 
+  @Get('sendMail')
+  async mail(): Promise<any> {
+    return await this.rsshubService.sendMail();
+  }
+
   @Get('clearall')
   async clearAll() {
     await this.rsshubService.clearAll();

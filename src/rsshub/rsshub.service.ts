@@ -3,6 +3,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Document } from 'mongoose';
 import { RsshubItem, RsshubResponseItem, RsshubSubItem, RsshubFormatItem } from './interface/rsshubItem.interface';
 
+import { sendMail } from '../../script/nodemailer';
+
 interface RsshubModel extends RsshubItem, Document {}
 
 import rsshub = require('rsshub');
@@ -46,10 +48,35 @@ export class RsshubService {
     return this.formatRsshubResponse(result, url);
   }
 
+  async saveJueJinTrending(category: string, type: string): Promise<any> {
+    const url = `/juejin/trending/${category}/${type}`;
+    const result = await rsshub.request(url);
+    const data = this.formatRsshubResponse(result, url)
+    this.rsshubModel.insertMany(data);
+  }
+
   async getJueJinPins(): Promise<any> {
     const url = `/juejin/pins`;
     const result = await rsshub.request(url);
     return this.formatRsshubResponse(result, url);
+  }
+
+  async saveJueJinPins(): Promise<any> {
+    const url = `/juejin/pins`;
+    const result = await rsshub.request(url);
+    const data = this.formatRsshubResponse(result, url)
+    this.rsshubModel.insertMany(data);
+  }
+
+  async sendMail() {
+    const arr = await Promise.all([
+      this.getJueJinCategory('frontend'),
+      this.getJueJinTrending('frontend', 'weekly'),
+      this.getJueJinPins(),
+    ]);
+
+    const content = arr.reduce((accumulator, currentValue) => [...accumulator, ...currentValue]);
+    sendMail(content);
   }
 
   formatRsshubResponse(data: RsshubResponseItem, url?: string): RsshubFormatItem[] {
