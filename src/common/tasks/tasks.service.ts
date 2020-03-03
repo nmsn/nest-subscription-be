@@ -1,16 +1,18 @@
 import { Injectable, Logger } from '@nestjs/common';
 import {
-  // Cron,
+  Cron,
   // Interval,
   // Timeout,
-  // CronExpression,
+  CronExpression,
   SchedulerRegistry,
 } from '@nestjs/schedule';
 import { CronJob } from 'cron';
 
+import { RsshubService } from '../../rsshub/rsshub.service';
+
 @Injectable()
 export class TasksService {
-  constructor(private readonly schedulerRegistry: SchedulerRegistry) {}
+  constructor(private readonly schedulerRegistry: SchedulerRegistry, private readonly rsshubService: RsshubService,) {}
   private readonly logger = new Logger(TasksService.name);
 
   // @Cron('45 * * * * *')
@@ -18,10 +20,11 @@ export class TasksService {
   //   this.logger.debug('Called when the second is 45');
   // }
 
-  // @Cron(CronExpression.EVERY_MINUTE)
-  // handleCron2() {
-  //   this.logger.debug('Called when the current second is 45');
-  // }
+  @Cron(CronExpression.EVERY_DAY_AT_9AM)
+  dailyPush() {
+    this.rsshubService.sendMail();
+    this.logger.log('Mail sent successfully!');
+  }
 
   // @Interval(10000)
   // handleInterval() {
